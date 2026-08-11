@@ -1,0 +1,26 @@
+App(
+    appid="echo",
+    name="Echo",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="echo_app",
+    # The device table, the network table and the per-scene scratch buffers all
+    # live in one malloc'd struct, but the report writer builds its rows on the
+    # way out and the GUI thread runs the scene ticks.
+    stack_size=8 * 1024,
+    fap_category="GPIO",
+    fap_icon="icons/echo_10px.png",
+    fap_icon_assets="icons",
+    fap_author="at0m-b0mb",
+    fap_weburl="https://github.com/at0m-b0mb/Echo-FlipperZero",
+    fap_version="1.0",
+    # Explicit, so the recursive default does not sweep test/ (host-only code)
+    # into the firmware build.
+    sources=[
+        "echo.c",
+        "helpers/*.c",
+        "views/*.c",
+        "scenes/*.c",
+    ],
+    fap_description="Your phone is shouting where you have been. Every phone keeps a list of the networks it has joined, and many of them read that list out loud - by name, over the air, to anybody listening. Echo listens. It shows the room as a live chamber of ripples, one for each device calling out, and prints what they said: a hotel, a gym, a clinic, the router in your kitchen. Each name is sorted into the kind of place it points at, each device is graded A+ to F on how much of itself it gave away, and the dossier screen reads a stranger's travel history back off thin air. It is honest about the other half too: a modern phone with private Wi-Fi addresses and no stale saved networks leaks nothing here, and Echo says so in as many words. It also shows why randomizing an address is not enough on its own - when the same probe fingerprint turns up on three MACs and the frame counter carries straight on through the change, that is one radio wearing three names, and Echo can prove it. Needs an ESP32 board on GPIO 13/14 running the Echo sniffer, or turn on Demo mode and watch a scripted room instead. Receive only: it never transmits, never associates, and the saved report masks every address and every name.",
+    requires=["gui"],
+)

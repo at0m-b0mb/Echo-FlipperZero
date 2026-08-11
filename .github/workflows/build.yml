@@ -1,0 +1,47 @@
+name: Build FAP
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    name: engine tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Classifier and exposure engine
+        run: make -C test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: engine
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [release, dev]
+    name: ufbt (${{ matrix.channel }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ufbt
+        run: python3 -m pip install --upgrade ufbt
+
+      - name: Sync SDK (${{ matrix.channel }})
+        run: ufbt update --channel=${{ matrix.channel }}
+
+      - name: Build Echo
+        run: ufbt
+
+      - name: Upload .fap
+        uses: actions/upload-artifact@v4
+        with:
+          name: echo-fap-${{ matrix.channel }}
+          path: dist/*.fap
+          if-no-files-found: error
